@@ -76,9 +76,8 @@ class BarePokemon extends Component {
     componentDidMount(){
         //console.log("Component did mount");
         const {id} = this.props;
-        getPokemon(id).then(data => {
-            this.setState({data});
-        })    }
+        getPokemon(id).then(data => this.setState({data}));
+    }
 
     static defaultProps = {
         enableChange: true,
@@ -90,39 +89,40 @@ class BarePokemon extends Component {
         if(id !== this.props.id){
             getPokemon(id).then(data => {
                 this.setState({data});
-            })    
+            })
         }
     }
 
 
     handleClick(){
         console.log("CLICK ON POKEMON");
-        const {selected, data} = this.state;
-        const { dispatch } = this.props;
-        this.setState({selected: !selected});
+        const {dispatch, isFavorite} = this.props;
+        //const {selected} = this.state;
+        //this.setState({selected: !selected});
 
         if(this.props.enableChange){
             dispatch({
                 type:"INCREMENT_CLICKS"
             })
 
-            if(!selected){
+            if(!isFavorite){
                 dispatch({type:"SELECT_POKEMON", pokemon:{id:this.props.id, ...this.state.data}});
-            }else{
-                dispatch({type:"UNSELECT_POKEMON", pokemon:{id:this.props.id, ...this.state.data}});
             }
+            // else{
+            //     dispatch({type:"UNSELECT_POKEMON", pokemon:{id:this.props.id, ...this.state.data}});
+            // }
         }
     }
 
     render(){
         const {id, isFavorite} = this.props;
-        const {selected, data} = this.state;
-        console.log("RENDERPOKEMON")
+        const {data} = this.state;
+        console.log("RENDERPOKEMON");
         return (
-            <PokeBall className={cx({selected, isFavorite})} onClick={() => this.handleClick()}>
+            <PokeBall className={cx({isFavorite})} onClick={() => this.handleClick()}>
                 <div className="cnt">
-                {data ? 
-                    selected ? <img src={data.front_default} alt=""/> : <p>#{id}</p>
+                {data ?
+                    isFavorite ? <img src={data.front_default} alt=""/> : <p>#{id}</p>
                 :
                 <p>...</p>}
                 </div>
@@ -131,8 +131,6 @@ class BarePokemon extends Component {
     }
 }
 
-export const Pokemon = connect((state,props)=>{
-    return {
-        isFavorite: state.favoritePokemon && state.favoritePokemon.id === props.id ? true : false
-    }
+export const Pokemon = connect((state,props) => {
+    return {isFavorite: state.favoritePokemon && state.favoritePokemon.id === props.id ? true : false}
 })(BarePokemon);

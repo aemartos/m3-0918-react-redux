@@ -60,7 +60,7 @@ class App extends Component {
           </PoseGroup>
         </header>
       </div>
-    ) 
+    )
     }/>
     );
   }
